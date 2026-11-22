@@ -11,9 +11,9 @@ Aplikasi console berbasis TypeScript untuk membantu kasir penitipan kucing yang 
 
 | No | Nama | NIM | Akun GitHub |
 |----|------|-----|-------------|
-| 1 | Dety Anggi Agustin Br Tarigan | 263140700111017 | [@detyanggiagustin-dot](https://github.com/detyanggiagustin-dot) |
-| 2 | Isna Miftahul Azizah | 263140700111018 | [@mitaaazizah](https://github.com/mitaaazizah) |
-| 3 | Raynar Valdis Rasheesa | 263140700111048 | [@sabaeiii](https://github.com/sabaeiii) |
+| 1 | Dety Anggi Agustin Br Tarigan | 2631407001111017 | [@detyanggiagustin-dot](https://github.com/detyanggiagustin-dot) |
+| 2 | Isna Miftahul Azizah | 2631407001111018 | [@mitaaazizah](https://github.com/mitaaazizah) |
+| 3 | Raynar Valdis Rasheesa | 2631407001111048 | [@sabaeiii](https://github.com/sabaeiii) |
 
 ## Pembagian Tugas dan Kontribusi
 
