@@ -31,12 +31,4 @@ Aplikasi console berbasis TypeScript untuk membantu kasir penitipan kucing yang 
 - Update (ubah data)
 - Delete (hapus data dengan konfirmasi Y/N)
 - Search (kata kunci dan filter)
-
-## Cara Instal dan Menjalankan
-
-```
-npm install
-npx ts-node src/index.ts
-```
- 
  
