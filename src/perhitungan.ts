@@ -14,7 +14,7 @@ function ambilHargaMakanan(pilihan: number): number {
             harga = 20000; // makanan premium dari tempat penitipan
             break;
         default: // jika tidak ada case yang cocok
-            harga = 0;     // kode di luar 1-3 (tidak akan terjadi karena input sudah divalidasi)
+            harga = 0;     // kode selain 1-3 (tidak akan terjadi karena input sudah divalidasi)
             break;
     }
     return harga; // kembalikan harga hasil seleksi
@@ -24,13 +24,13 @@ function ambilHargaMakanan(pilihan: number): number {
 function ambilNamaMakanan(pilihan: number): string {
     let nama: string = ""; // menampung nama makanan
     switch (pilihan) {
-        case 1: // jika pilihan sama dengan 1
+        case 1: // jika pilihan 1
             nama = "Makanan sendiri";
             break;
-        case 2: // jika pilihan sama dengan 2
+        case 2: // jika pilihan 2
             nama = "Makanan penitipan standar";
             break;
-        case 3: // jika pilihan sama dengan 3
+        case 3: // jika pilihan 3
             nama = "Makanan penitipan premium";
             break;
         default: // jika tidak ada case yang cocok
@@ -44,16 +44,16 @@ function ambilNamaMakanan(pilihan: number): string {
 function ambilHargaLayanan(pilihan: number): number {
     let harga: number = 0; // harga bawaan 0
     switch (pilihan) {
-        case 1: // jika pilihan sama dengan 1
+        case 1: // jika pilihan  1
             harga = 0;     // tidak memakai layanan
             break;
-        case 2: // jika pilihan sama dengan 2
+        case 2: // jika pilihan  2
             harga = 25000; // grooming
             break;
-        case 3: // jika pilihan sama dengan 3
+        case 3: // jika pilihan  3
             harga = 10000; // potong kuku
             break;
-        case 4: // jika pilihan sama dengan 4
+        case 4: // jika pilihan  4
             harga = 30000; // grooming dan potong kuku
             break;
         default: // jika tidak ada case yang cocok
