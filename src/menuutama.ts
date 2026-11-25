@@ -1,0 +1,151 @@
+import * as readline from 'readline';
+import { cetakRincian } from './tampilan';
+
+const rl: readline.Interface = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+    terminal: false
+});
+
+const antrianBaris: string[] = [];
+let penunggu: ((baris: string) => void) | null = null;
+let inputSelesai: boolean = false;
+
+rl.on('line', (baris: string): void => {
+    if (penunggu !== null) {
+        const kirim: (baris: string) => void = penunggu;
+        penunggu = null;
+        kirim(baris);
+    } else {
+        antrianBaris.push(baris);
+    }
+});
+
+rl.on('close', (): void => {
+    inputSelesai = true;
+    if (penunggu !== null) {
+        console.log("\n[Info] Input ditutup. Program dihentikan.");
+        process.exit(0);
+    }
+});
+
+export interface DataPenitipan {
+    id: string;
+    namaPemilik: string;
+    jumlahKucing: number;
+    lamaPenitipan: number;
+    pilihanMakanan: number;
+    pilihanLayanan: number;
+    sudahDiambil: boolean;
+}
+
+export interface RincianBiaya {
+    biayaPenitipan: number;
+    biayaMakanan: number;
+    biayaLayanan: number;
+    totalSebelumDiskon: number;
+    persenDiskon: number;
+    diskon: number;
+    totalBayar: number;
+    dapatDiskon: boolean;
+}
+
+export const HARGA_PER_HARI: number = 30000;
+
+const MENU_UTAMA: string[] = [
+    "1. Tambah Data Penitipan        (Create)",
+    "2. Lihat Semua Data             (Read)",
+    "3. Lihat Detail Berdasarkan ID  (Read)",
+    "4. Ubah Data                    (Update)",
+    "5. Hapus Data                   (Delete)",
+    "6. Cari Data                    (Search)",
+    "0. Keluar"
+];
+
+export const daftarPenitipan: DataPenitipan[] = [
+    { id: "PTK-001", namaPemilik: "Budi Santoso", jumlahKucing: 2, lamaPenitipan: 4, pilihanMakanan: 2, pilihanLayanan: 2, sudahDiambil: false },
+    { id: "PTK-002", namaPemilik: "Siti Rahma", jumlahKucing: 3, lamaPenitipan: 7, pilihanMakanan: 3, pilihanLayanan: 4, sudahDiambil: false },
+    { id: "PTK-003", namaPemilik: "Andi Wijaya", jumlahKucing: 1, lamaPenitipan: 3, pilihanMakanan: 1, pilihanLayanan: 1, sudahDiambil: true },
+    { id: "PTK-004", namaPemilik: "Dewi Lestari", jumlahKucing: 6, lamaPenitipan: 15, pilihanMakanan: 2, pilihanLayanan: 3, sudahDiambil: false },
+    { id: "PTK-005", namaPemilik: "Rudi Hartono", jumlahKucing: 5, lamaPenitipan: 14, pilihanMakanan: 1, pilihanLayanan: 2, sudahDiambil: true },
+    { id: "PTK-006", namaPemilik: "Maya Putri", jumlahKucing: 4, lamaPenitipan: 10, pilihanMakanan: 3, pilihanLayanan: 1, sudahDiambil: false }
+];
+
+export function tanya(pertanyaan: string): Promise<string> {
+    process.stdout.write(pertanyaan);
+    return new Promise<string>((selesai: (baris: string) => void): void => {
+        const baris: string | undefined = antrianBaris.shift();
+        if (baris !== undefined) {
+            selesai(baris);
+        } else if (inputSelesai) {
+            console.log("\n[Info] Input ditutup. Program dihentikan.");
+            process.exit(0);
+        } else {
+            penunggu = selesai;
+        }
+    });
+}
+
+export function tampilBanner(): void {
+    console.log("=".repeat(60));
+    console.log("   SISTEM MANAJEMEN PENITIPAN KUCING");
+    console.log("   UAS Pemrograman Dasar - Aplikasi Console TypeScript");
+    console.log("=".repeat(60));
+    console.log("Data awal dimuat: " + daftarPenitipan.length + " data penitipan.");
+}
+
+function tampilMenu(): void {
+    console.log("\n------------------- MENU UTAMA -------------------");
+    MENU_UTAMA.forEach((teks: string): void => {
+        console.log("  " + teks);
+    });
+    console.log("--------------------------------------------------");
+}
+
+function fiturBelumTersedia(namaFitur: string, progressKe: number): void {
+    console.log("\n[Info] Fitur " + namaFitur + " akan tersedia pada Progress " + progressKe + ".");
+}
+
+export async function jalankanMenu(): Promise<void> {
+    let berjalan: boolean = true;
+    while (berjalan) {
+        tampilMenu();
+        const batasMenu: number = MENU_UTAMA.length - 1;
+        const pilihan: string = (await tanya("Pilih menu (0-" + batasMenu + "): ")).trim();
+        switch (pilihan) {
+            case "1":
+                fiturBelumTersedia("Tambah Data (Create)", 3);
+                break;
+            case "2":
+                daftarPenitipan.forEach((data: DataPenitipan): void => {
+                    cetakRincian(data);
+                });
+                break;
+            case "3":
+                const cariId: string = (await tanya("Masukkan ID Penitipan (contoh PTK-001): ")).trim().toUpperCase();
+                const ditemukan: DataPenitipan | undefined = daftarPenitipan.find((d: DataPenitipan) => d.id === cariId);
+                if (ditemukan) {
+                    cetakRincian(ditemukan);
+                } else {
+                    console.log("  [!] Data dengan ID " + cariId + " tidak ditemukan.");
+                }
+                break;
+            case "4":
+                fiturBelumTersedia("Ubah Data (Update)", 5);
+                break;
+            case "5":
+                fiturBelumTersedia("Hapus Data (Delete)", 5);
+                break;
+            case "6":
+                fiturBelumTersedia("Cari Data (Search)", 6);
+                break;
+            case "0":
+                berjalan = false;
+                console.log("\nTerima kasih telah menggunakan Sistem Manajemen Penitipan Kucing.");
+                break;
+            default:
+                console.log("  [!] Pilihan menu tidak valid. Masukkan angka 0 sampai 6.");
+                break;
+        }
+    }
+}
