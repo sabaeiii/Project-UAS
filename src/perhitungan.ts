@@ -1,5 +1,8 @@
 import { DataPenitipan, RincianBiaya, HARGA_PER_HARI } from './menuutama';
 
+export const JUMLAH_PILIHAN_MAKANAN: number = 3;
+export const JUMLAH_PILIHAN_LAYANAN: number = 4;
+
 // harga makanan per kucing per hari
 export function ambilHargaMakanan(pilihan: number): number {
     let harga: number = 0;
