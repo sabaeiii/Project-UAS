@@ -19,9 +19,9 @@ Aplikasi console berbasis TypeScript untuk membantu kasir penitipan kucing yang 
 
 | Nama | Akun GitHub | Fitur / Bagian Kode yang Dikerjakan | Link Pull Request Utama |
 |------|-------------|--------------------------------------|--------------------------|
-| Dety Anggi Agustin Br Tarigan | @detyanggiagustin-dot | Setup, tipe data, data awal (seed), fungsi input, dan validasi, fitur CREATE, menu utama (loop) | (menyusul) |
-| Isna Miftahul Azizah | @mitaaazizah | Logika biaya dan diskon (materi UTS), fitur DELETE dan fitur SEARCH (kata kunci + filter) | (menyusul) |
-| Raynar Valdis Rasheesa | @sabaeiii | Fungsi tampilan, fitur READ (semua data, detail per ID, ringkasan) dan fitur UPDATE | (menyusul) |
+| Dety Anggi Agustin Br Tarigan | @detyanggiagustin-dot | Setup, tipe data, data awal (seed), fungsi input, dan validasi, fitur CREATE, menu utama (loop) | https://github.com/sabaeiii/Project-UAS/pull/3 |
+| Isna Miftahul Azizah | @mitaaazizah | Logika biaya dan diskon (materi UTS), fitur DELETE dan fitur SEARCH (kata kunci + filter) | https://github.com/sabaeiii/Project-UAS/pull/4 |
+| Raynar Valdis Rasheesa | @sabaeiii | Fungsi tampilan, fitur READ (semua data, detail per ID, ringkasan) dan fitur UPDATE | https://github.com/sabaeiii/Project-UAS/pull/2 |
 
 ## Daftar Fitur
 
