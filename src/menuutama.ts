@@ -1,5 +1,6 @@
 import * as readline from 'readline';
-import { cetakRincian } from './tampilan';
+import { cetakRincian, tampilPilihanMakanan, tampilPilihanLayanan } from './tampilan';
+import { JUMLAH_PILIHAN_MAKANAN, JUMLAH_PILIHAN_LAYANAN } from './perhitungan';
 
 const rl: readline.Interface = readline.createInterface({
     input: process.stdin,
@@ -55,6 +56,8 @@ export interface RincianBiaya {
 }
 
 export const HARGA_PER_HARI: number = 30000; // per kucing per hari
+const MAKS_KUCING: number = 50;
+const MAKS_HARI: number = 365;
 
 const MENU_UTAMA: string[] = [
     "1. Tambah Data Penitipan        (Create)",
@@ -76,6 +79,9 @@ export const daftarPenitipan: DataPenitipan[] = [
     { id: "PTK-006", namaPemilik: "Maya Putri", jumlahKucing: 4, lamaPenitipan: 10, pilihanMakanan: 3, pilihanLayanan: 1, sudahDiambil: false }
 ];
 
+// nomor ID terakhir yang dipakai, naik setiap ada data baru
+let nomorUrut: number = daftarPenitipan.length;
+
 // tampilkan pertanyaan, lalu tunggu jawaban pengguna
 export function tanya(pertanyaan: string): Promise<string> {
     process.stdout.write(pertanyaan);
@@ -91,6 +97,95 @@ export function tanya(pertanyaan: string): Promise<string> {
             penunggu = selesai;
         }
     });
+}
+
+// teks pertanyaan dibuat selebar 34 karakter supaya titik dua di semua prompt lurus
+function buatLabel(teks: string): string {
+    return teks.padEnd(34) + ": ";
+}
+
+// baca nama pemilik, ulangi terus sampai valid
+async function bacaNama(pertanyaan: string): Promise<string> {
+    let hasil: string = "";
+    let valid: boolean = false;
+    while (!valid) {
+        const teks: string = (await tanya(pertanyaan)).trim().replace(/\s+/g, " "); // spasi berlebih dirapikan
+        if (teks === "") {
+            console.log("  [!] Nama tidak boleh kosong.");
+        } else if (teks.length < 2 || teks.length > 30) {
+            console.log("  [!] Nama harus terdiri dari 2 sampai 30 karakter.");
+        } else if (!/^[A-Za-z][A-Za-z .'-]*$/.test(teks)) {
+            console.log("  [!] Nama hanya boleh berisi huruf, spasi, titik, apostrof, atau tanda hubung.");
+        } else {
+            hasil = teks;
+            valid = true;
+        }
+    }
+    return hasil;
+}
+
+// baca bilangan bulat dalam rentang minimal..maksimal, ulangi terus sampai valid
+async function bacaAngka(pertanyaan: string, minimal: number, maksimal: number): Promise<number> {
+    let hasil: number = 0;
+    let valid: boolean = false;
+    while (!valid) {
+        const teks: string = (await tanya(pertanyaan)).trim();
+        const angka: number = Number(teks); // NaN kalau teksnya bukan angka
+        if (teks === "") {
+            console.log("  [!] Input tidak boleh kosong.");
+        } else if (Number.isNaN(angka) || !/^-?\d+(\.\d+)?$/.test(teks)) {
+            console.log("  [!] \"" + teks + "\" bukan angka yang valid.");
+        } else if (angka < 0) {
+            console.log("  [!] Nilai tidak boleh negatif.");
+        } else if (!Number.isInteger(angka)) {
+            console.log("  [!] Nilai harus berupa bilangan bulat.");
+        } else if (angka < minimal || angka > maksimal) {
+            console.log("  [!] Nilai harus berada di antara " + minimal + " dan " + maksimal + ".");
+        } else {
+            hasil = angka;
+            valid = true;
+        }
+    }
+    return hasil;
+}
+
+// buat ID baru (PTK-007, PTK-008, ...); diulang kalau ternyata sudah dipakai data lain
+function buatIdBaru(): string {
+    let idBaru: string = "";
+    let sudahAda: boolean = true;
+    while (sudahAda) {
+        nomorUrut += 1;
+        idBaru = "PTK-" + String(nomorUrut).padStart(3, "0");
+        const idUji: string = idBaru;
+        sudahAda = daftarPenitipan.some((data: DataPenitipan): boolean => data.id === idUji);
+    }
+    return idBaru;
+}
+
+// fitur Create: input -> validasi -> push ke array -> tampilkan rincian
+async function tambahData(): Promise<void> {
+    console.log("\n=== TAMBAH DATA PENITIPAN (CREATE) ===");
+    const nama: string = await bacaNama(buatLabel("Nama pemilik"));
+    const jumlah: number = await bacaAngka(buatLabel("Jumlah kucing (1-" + MAKS_KUCING + ")"), 1, MAKS_KUCING);
+    const lama: number = await bacaAngka(buatLabel("Lama penitipan (hari, 1-" + MAKS_HARI + ")"), 1, MAKS_HARI);
+    tampilPilihanMakanan();
+    const makanan: number = await bacaAngka(buatLabel("Pilih makanan (1-" + JUMLAH_PILIHAN_MAKANAN + ")"), 1, JUMLAH_PILIHAN_MAKANAN);
+    tampilPilihanLayanan();
+    const layanan: number = await bacaAngka(buatLabel("Pilih layanan (1-" + JUMLAH_PILIHAN_LAYANAN + ")"), 1, JUMLAH_PILIHAN_LAYANAN);
+
+    // kucing yang baru dititipkan otomatis belum diambil
+    const dataBaru: DataPenitipan = {
+        id: buatIdBaru(),
+        namaPemilik: nama,
+        jumlahKucing: jumlah,
+        lamaPenitipan: lama,
+        pilihanMakanan: makanan,
+        pilihanLayanan: layanan,
+        sudahDiambil: false
+    };
+    daftarPenitipan.push(dataBaru);
+    console.log("\n[OK] Data berhasil ditambahkan dengan ID " + dataBaru.id + ".");
+    cetakRincian(dataBaru);
 }
 
 export function tampilBanner(): void {
@@ -123,7 +218,7 @@ export async function jalankanMenu(): Promise<void> {
         const pilihan: string = (await tanya("Pilih menu (0-" + batasMenu + "): ")).trim();
         switch (pilihan) {
             case "1":
-                fiturBelumTersedia("Tambah Data (Create)", 3);
+                await tambahData();
                 break;
             case "2":
                 daftarPenitipan.forEach((data: DataPenitipan): void => {
