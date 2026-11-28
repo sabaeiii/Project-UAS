@@ -4,9 +4,7 @@ import {
     ambilNamaMakanan,
     ambilHargaMakanan,
     ambilNamaLayanan,
-    ambilHargaLayanan,
-    JUMLAH_PILIHAN_MAKANAN,
-    JUMLAH_PILIHAN_LAYANAN
+    ambilHargaLayanan
 } from './perhitungan';
 
 // 2.1  FUNGSI FORMAT DAN TAMPILAN
@@ -69,20 +67,4 @@ export function cetakRincian(data: DataPenitipan): void {
     cetakBaris("Diskon (" + rincian.persenDiskon + "%)", formatRupiah(rincian.diskon));
     cetakBaris("TOTAL BAYAR", formatRupiah(rincian.totalBayar));
     console.log("  " + "-".repeat(58));
-}
-
-// daftar pilihan makanan beserta harganya, ditampilkan sebelum pengguna memilih
-export function tampilPilihanMakanan(): void {
-    console.log("Pilihan Makanan (harga per kucing per hari):");
-    for (let nomor: number = 1; nomor <= JUMLAH_PILIHAN_MAKANAN; nomor++) {
-        console.log("  " + nomor + ". " + ambilNamaMakanan(nomor) + " (" + formatRupiah(ambilHargaMakanan(nomor)) + ")");
-    }
-}
-
-// daftar pilihan layanan beserta harganya
-export function tampilPilihanLayanan(): void {
-    console.log("Pilihan Layanan (harga per kucing):");
-    for (let nomor: number = 1; nomor <= JUMLAH_PILIHAN_LAYANAN; nomor++) {
-        console.log("  " + nomor + ". " + ambilNamaLayanan(nomor) + " (" + formatRupiah(ambilHargaLayanan(nomor)) + ")");
-    }
 }
