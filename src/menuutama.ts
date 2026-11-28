@@ -7,6 +7,8 @@ const rl: readline.Interface = readline.createInterface({
     terminal: false
 });
 
+// input dibaca per baris lewat event, jadi perlu antrean supaya baris yang
+// datang sebelum ada pertanyaan (misal saat input di-paste) tidak hilang
 const antrianBaris: string[] = [];
 let penunggu: ((baris: string) => void) | null = null;
 let inputSelesai: boolean = false;
@@ -29,16 +31,18 @@ rl.on('close', (): void => {
     }
 });
 
+// satu transaksi penitipan
 export interface DataPenitipan {
     id: string;
     namaPemilik: string;
     jumlahKucing: number;
-    lamaPenitipan: number;
-    pilihanMakanan: number;
-    pilihanLayanan: number;
+    lamaPenitipan: number;  // dalam hari
+    pilihanMakanan: number; // 1 sendiri, 2 standar, 3 premium
+    pilihanLayanan: number; // 1 tidak ada, 2 grooming, 3 potong kuku, 4 keduanya
     sudahDiambil: boolean;
 }
 
+// hasil hitung biaya satu penitipan
 export interface RincianBiaya {
     biayaPenitipan: number;
     biayaMakanan: number;
@@ -50,7 +54,7 @@ export interface RincianBiaya {
     dapatDiskon: boolean;
 }
 
-export const HARGA_PER_HARI: number = 30000;
+export const HARGA_PER_HARI: number = 30000; // per kucing per hari
 
 const MENU_UTAMA: string[] = [
     "1. Tambah Data Penitipan        (Create)",
@@ -62,6 +66,7 @@ const MENU_UTAMA: string[] = [
     "0. Keluar"
 ];
 
+// data awal, disimpan di memori (belum pakai database)
 export const daftarPenitipan: DataPenitipan[] = [
     { id: "PTK-001", namaPemilik: "Budi Santoso", jumlahKucing: 2, lamaPenitipan: 4, pilihanMakanan: 2, pilihanLayanan: 2, sudahDiambil: false },
     { id: "PTK-002", namaPemilik: "Siti Rahma", jumlahKucing: 3, lamaPenitipan: 7, pilihanMakanan: 3, pilihanLayanan: 4, sudahDiambil: false },
@@ -71,6 +76,7 @@ export const daftarPenitipan: DataPenitipan[] = [
     { id: "PTK-006", namaPemilik: "Maya Putri", jumlahKucing: 4, lamaPenitipan: 10, pilihanMakanan: 3, pilihanLayanan: 1, sudahDiambil: false }
 ];
 
+// tampilkan pertanyaan, lalu tunggu jawaban pengguna
 export function tanya(pertanyaan: string): Promise<string> {
     process.stdout.write(pertanyaan);
     return new Promise<string>((selesai: (baris: string) => void): void => {
@@ -78,6 +84,7 @@ export function tanya(pertanyaan: string): Promise<string> {
         if (baris !== undefined) {
             selesai(baris);
         } else if (inputSelesai) {
+            // tidak akan ada jawaban lagi (misal Ctrl+D), langsung keluar
             console.log("\n[Info] Input ditutup. Program dihentikan.");
             process.exit(0);
         } else {
@@ -102,15 +109,17 @@ function tampilMenu(): void {
     console.log("--------------------------------------------------");
 }
 
+// placeholder untuk fitur yang dikerjakan di progress berikutnya
 function fiturBelumTersedia(namaFitur: string, progressKe: number): void {
     console.log("\n[Info] Fitur " + namaFitur + " akan tersedia pada Progress " + progressKe + ".");
 }
 
+// menu berulang terus sampai pengguna memilih 0
 export async function jalankanMenu(): Promise<void> {
     let berjalan: boolean = true;
     while (berjalan) {
         tampilMenu();
-        const batasMenu: number = MENU_UTAMA.length - 1;
+        const batasMenu: number = MENU_UTAMA.length - 1; // dikurangi 1 karena "0. Keluar" ikut terhitung
         const pilihan: string = (await tanya("Pilih menu (0-" + batasMenu + "): ")).trim();
         switch (pilihan) {
             case "1":
@@ -122,6 +131,7 @@ export async function jalankanMenu(): Promise<void> {
                 });
                 break;
             case "3":
+                // toUpperCase supaya "ptk-001" tetap ketemu
                 const cariId: string = (await tanya("Masukkan ID Penitipan (contoh PTK-001): ")).trim().toUpperCase();
                 const ditemukan: DataPenitipan | undefined = daftarPenitipan.find((d: DataPenitipan) => d.id === cariId);
                 if (ditemukan) {
@@ -144,6 +154,7 @@ export async function jalankanMenu(): Promise<void> {
                 console.log("\nTerima kasih telah menggunakan Sistem Manajemen Penitipan Kucing.");
                 break;
             default:
+                // selain 0-6, tidak berhenti, menu muncul lagi
                 console.log("  [!] Pilihan menu tidak valid. Masukkan angka 0 sampai 6.");
                 break;
         }

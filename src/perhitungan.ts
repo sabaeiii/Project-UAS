@@ -1,10 +1,11 @@
 import { DataPenitipan, RincianBiaya, HARGA_PER_HARI } from './menuutama';
 
+// harga makanan per kucing per hari
 export function ambilHargaMakanan(pilihan: number): number {
     let harga: number = 0;
     switch (pilihan) {
         case 1:
-            harga = 0;
+            harga = 0; // bawa makanan sendiri
             break;
         case 2:
             harga = 10000;
@@ -38,6 +39,7 @@ export function ambilNamaMakanan(pilihan: number): string {
     return nama;
 }
 
+// harga layanan per kucing (sekali bayar, tidak dikali hari)
 export function ambilHargaLayanan(pilihan: number): number {
     let harga: number = 0;
     switch (pilihan) {
@@ -45,13 +47,13 @@ export function ambilHargaLayanan(pilihan: number): number {
             harga = 0;
             break;
         case 2:
-            harga = 25000;
+            harga = 25000; // grooming
             break;
         case 3:
-            harga = 10000;
+            harga = 10000; // potong kuku
             break;
         case 4:
-            harga = 30000;
+            harga = 30000; // keduanya
             break;
         default:
             harga = 0;
@@ -82,6 +84,8 @@ export function ambilNamaLayanan(pilihan: number): string {
     return nama;
 }
 
+// aturan diskon dari soal UTS:
+// 3-5 kucing dan 7-14 hari = 10%, lebih dari 5 kucing dan minimal 15 hari = 15%
 export function hitungPersenDiskon(jumlahKucing: number, lamaPenitipan: number): number {
     let persen: number = 0;
     if (jumlahKucing >= 3) {
@@ -113,6 +117,7 @@ export function hitungRincian(data: DataPenitipan): RincianBiaya {
 
     const persenDiskon: number = hitungPersenDiskon(data.jumlahKucing, data.lamaPenitipan);
 
+    // diskon dihitung dari total sebelum diskon: total x persen / 100
     let diskon: number = totalSebelumDiskon;
     diskon *= persenDiskon;
     diskon /= 100;
